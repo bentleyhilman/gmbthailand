@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thailand Mission Trip Countdown & Travel Hub</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter & Cinzel & Kanit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700&family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        cinzel: ['Cinzel', 'serif'],
+                        thai: ['Kanit', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .glass-panel {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(245, 158, 11, 0.15);
+        }
+        .glass-panel-subtle {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .text-glow {
+            text-shadow: 0 0 25px rgba(245, 158, 11, 0.7), 0 0 50px rgba(245, 158, 11, 0.3);
+        }
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #FFFBEB 0%, #FBBF24 40%, #F59E0B 70%, #D97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Continuous drifting ambient background light animations */
+        @keyframes float-1 {
+            0% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
+            33% { transform: translate(120px, -80px) scale(1.25); opacity: 0.65; }
+            66% { transform: translate(-60px, 100px) scale(0.9); opacity: 0.35; }
+            100% { transform: translate(0px, 0px) scale(1); opacity: 0.45; }
+        }
+
+        @keyframes float-2 {
+            0% { transform: translate(0px, 0px) scale(1.1); opacity: 0.5; }
+            33% { transform: translate(-140px, 90px) scale(0.85); opacity: 0.3; }
+            66% { transform: translate(90px, -110px) scale(1.3); opacity: 0.6; }
+            100% { transform: translate(0px, 0px) scale(1.1); opacity: 0.5; }
+        }
+
+        @keyframes float-3 {
+            0% { transform: translate(0px, 0px) scale(0.9); opacity: 0.35; }
+            50% { transform: translate(100px, 120px) scale(1.2); opacity: 0.55; }
+            100% { transform: translate(0px, 0px) scale(0.9); opacity: 0.35; }
+        }
+
+        @keyframes float-4 {
+            0% { transform: translate(0px, 0px) scale(1); opacity: 0.4; }
+            50% { transform: translate(-110px, -90px) scale(1.3); opacity: 0.6; }
+            100% { transform: translate(0px, 0px) scale(1); opacity: 0.4; }
+        }
+
+        .orb-orange { animation: float-1 22s ease-in-out infinite; }
+        .orb-blue { animation: float-2 26s ease-in-out infinite; }
+        .orb-purple { animation: float-3 20s ease-in-out infinite; }
+        .orb-amber { animation: float-4 28s ease-in-out infinite; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.8); }
+        ::-webkit-scrollbar-thumb { background: rgba(245, 158, 11, 0.3); border-radius: 3px; }
+
+        /* Custom Checkbox Styling */
+        .item-checkbox:checked + label {
+            text-decoration: line-through;
+            color: rgba(148, 163, 184, 0.7);
+        }
+    </style>
+</head>
+
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen relative overflow-x-hidden flex flex-col justify-center items-center py-8 select-none">
+
+    <!-- Ambient Drifting Color Lights (Oranges, Blues, Purples) -->
+    <div class="fixed top-[-10%] left-[-10%] w-[55vw] h-[55vw] max-w-[700px] max-h-[700px] bg-amber-600/30 rounded-full blur-[140px] pointer-events-none orb-orange z-0"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] max-w-[750px] max-h-[750px] bg-indigo-700/35 rounded-full blur-[150px] pointer-events-none orb-blue z-0"></div>
+    <div class="fixed top-[20%] right-[-5%] w-[45vw] h-[45vw] max-w-[600px] max-h-[600px] bg-purple-900/40 rounded-full blur-[140px] pointer-events-none orb-purple z-0"></div>
+    <div class="fixed bottom-[15%] left-[-5%] w-[50vw] h-[50vw] max-w-[650px] max-h-[650px] bg-orange-700/25 rounded-full blur-[150px] pointer-events-none orb-amber z-0"></div>
+
+    <!-- Soft Center Ambient Atmosphere -->
+    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] h-[70vw] max-w-[900px] max-h-[900px] bg-violet-950/30 rounded-full blur-[160px] pointer-events-none z-0"></div>
+
+    <!-- Canvas for Smooth Moving Color Light Waves -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Main Content Container -->
+    <div class="relative z-10 max-w-5xl w-full mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center gap-8">
+        
+        <!-- HEADER SECTION -->
+        <header class="text-center mb-2">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 border border-amber-500/40 text-amber-300 text-xs font-semibold tracking-wider uppercase mb-3 shadow-lg">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
+                </span>
+                <span>Thailand Mission Trip 2026</span>
+            </div>
+
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight font-cinzel gold-gradient-text drop-shadow-md mb-2">
+                COUNTDOWN TO DEPARTURE
+            </h1>
+            <p class="text-slate-300 text-base sm:text-lg max-w-2xl mx-auto font-light">
+                "Go into all the world and preach the gospel to all creation."
+            </p>
+        </header>
+
+        <!-- COUNTDOWN DISPLAY SECTION -->
+        <main class="w-full">
+            <div class="glass-panel rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
+                <!-- Inner ambient shine -->
+                <div class="absolute -top-24 -left-24 w-56 h-56 bg-amber-500/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-24 -right-24 w-56 h-56 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                <!-- Timer Tiles Grid -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 text-center relative z-10">
+                    
+                    <!-- DAYS -->
+                    <div class="glass-panel-subtle rounded-2xl p-4 sm:p-6 flex flex-col items-center justify-center border-t-2 border-t-amber-500/60 shadow-lg transform transition duration-300 hover:scale-[1.03] hover:border-t-amber-400">
+                        <span id="days" class="text-4xl sm:text-6xl font-black font-mono text-white text-glow">000</span>
+                        <span class="text-xs sm:text-sm uppercase tracking-widest text-amber-400 font-semibold mt-2">Days</span>
+                    </div>
+
+                    <!-- HOURS -->
+                    <div class="glass-panel-subtle rounded-2xl p-4 sm:p-6 flex flex-col items-center justify-center border-t-2 border-t-amber-500/60 shadow-lg transform transition duration-300 hover:scale-[1.03] hover:border-t-amber-400">
+                        <span id="hours" class="text-4xl sm:text-6xl font-black font-mono text-white text-glow">00</span>
+                        <span class="text-xs sm:text-sm uppercase tracking-widest text-amber-400 font-semibold mt-2">Hours</span>
+                    </div>
+
+                    <!-- MINUTES -->
+                    <div class="glass-panel-subtle rounded-2xl p-4 sm:p-6 flex flex-col items-center justify-center border-t-2 border-t-amber-500/60 shadow-lg transform transition duration-300 hover:scale-[1.03] hover:border-t-amber-400">
+                        <span id="minutes" class="text-4xl sm:text-6xl font-black font-mono text-white text-glow">00</span>
+                        <span class="text-xs sm:text-sm uppercase tracking-widest text-amber-400 font-semibold mt-2">Minutes</span>
+                    </div>
+
+                    <!-- SECONDS -->
+                    <div class="glass-panel-subtle rounded-2xl p-4 sm:p-6 flex flex-col items-center justify-center border-t-2 border-t-amber-500/60 shadow-lg transform transition duration-300 hover:scale-[1.03] hover:border-t-amber-400">
+                        <span id="seconds" class="text-4xl sm:text-6xl font-black font-mono text-amber-400 text-glow">00</span>
+                        <span class="text-xs sm:text-sm uppercase tracking-widest text-amber-400 font-semibold mt-2">Seconds</span>
+                    </div>
+
+                </div>
+            </div>
+        </main>
+
+        <!-- PACKING LIST SECTION -->
+        <section class="w-full">
+            <div class="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden flex flex-col gap-6">
+                
+                <!-- Section Header -->
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-700/60 pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400">
+                            <i class="fa-solid fa-suitcase text-2xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold font-cinzel text-amber-200">Packing List</h2>
+                            <p class="text-xs sm:text-sm text-slate-300 font-light">Each person may pack 1 standard checked luggage (D + W + H: 158 cm/62 in, &lt;50 lbs)</p>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar & Reset -->
+                    <div class="flex items-center gap-4 min-w-[200px]">
+                        <div class="flex-1">
+                            <div class="flex justify-between text-xs font-semibold text-amber-300 mb-1">
+                                <span>Packed Progress</span>
+                                <span id="progress-percent">0%</span>
+                            </div>
+                            <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700">
+                                <div id="progress-bar" class="h-full bg-gradient-to-r from-amber-500 to-emerald-400 transition-all duration-300 w-0"></div>
+                            </div>
+                        </div>
+                        <button onclick="resetPackingList()" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-medium border border-slate-700 transition">
+                            Reset
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Packing Categories Grid -->
+                <div id="packing-categories" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    
+                    <!-- Important Documents -->
+                    <div class="glass-panel-subtle rounded-2xl p-5 border border-slate-800 flex flex-col gap-3">
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2 border-b border-slate-700/50 pb-2">
+                            <i class="fa-solid fa-passport text-amber-400"></i> Important Documents
+                        </h3>
+                        <div class="flex flex-col gap-2.5">
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" id="item-passport" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()">
+                                <label for="item-passport" class="text-sm text-slate-200 cursor-pointer">Passport and Notarized Letter</label>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" id="item-insurance" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()">
+                                <label for="item-insurance" class="text-sm text-slate-200 cursor-pointer">Travel insurance and medical information</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Personal Items -->
+                    <div class="glass-panel-subtle rounded-2xl p-5 border border-slate-800 flex flex-col gap-3">
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2 border-b border-slate-700/50 pb-2">
+                            <i class="fa-solid fa-book-bible text-amber-400"></i> Personal Items
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-bible" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-bible" class="text-sm text-slate-200 cursor-pointer">Bible</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-journal" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-journal" class="text-sm text-slate-200 cursor-pointer">Journal</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-pens" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-pens" class="text-sm text-slate-200 cursor-pointer">Pens & Stationary</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-phone" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-phone" class="text-sm text-slate-200 cursor-pointer">Phone & Charger</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-sunscreen" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-sunscreen" class="text-sm text-slate-200 cursor-pointer">Sunscreen</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-mosquito" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-mosquito" class="text-sm text-slate-200 cursor-pointer">Mosquito spray</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-sunglasses" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-sunglasses" class="text-sm text-slate-200 cursor-pointer">Sunglasses</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-hat" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-hat" class="text-sm text-slate-200 cursor-pointer">Hat</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-sanitizer" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-sanitizer" class="text-sm text-slate-200 cursor-pointer">Hand sanitizer</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-bottle" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-bottle" class="text-sm text-slate-200 cursor-pointer">Reusable water bottle</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-bag" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-bag" class="text-sm text-slate-200 cursor-pointer">Backpack / Day bag</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-snacks" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-snacks" class="text-sm text-slate-200 cursor-pointer">Plane & Base snacks</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-electrolytes" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-electrolytes" class="text-sm text-slate-200 cursor-pointer">Electrolyte drink mix</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-work" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-work" class="text-sm text-slate-200 cursor-pointer">Outfit for work projects</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-meds" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-meds" class="text-sm text-slate-200 cursor-pointer">Personal medications</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-painreliever" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-painreliever" class="text-sm text-slate-200 cursor-pointer">Tylenol / Advil</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-pepto" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-pepto" class="text-sm text-slate-200 cursor-pointer">Pepto-Bismol / Stomach meds</label></div>
+                        </div>
+                    </div>
+
+                    <!-- Toiletries -->
+                    <div class="glass-panel-subtle rounded-2xl p-5 border border-slate-800 flex flex-col gap-3">
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2 border-b border-slate-700/50 pb-2">
+                            <i class="fa-solid fa-pump-soap text-amber-400"></i> Toiletries
+                        </h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-soap" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-soap" class="text-sm text-slate-200 cursor-pointer">Soap and shampoo</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-toothbrush" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-toothbrush" class="text-sm text-slate-200 cursor-pointer">Toothpaste & toothbrush</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-deodorant" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-deodorant" class="text-sm text-slate-200 cursor-pointer">Deodorant</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-lotion" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-lotion" class="text-sm text-slate-200 cursor-pointer">Lotion</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-hygiene" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-hygiene" class="text-sm text-slate-200 cursor-pointer">Other personal hygiene items</label></div>
+                        </div>
+                    </div>
+
+                    <!-- Clothing Guidelines -->
+                    <div class="glass-panel-subtle rounded-2xl p-5 border border-slate-800 flex flex-col gap-3">
+                        <h3 class="text-sm font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2 border-b border-slate-700/50 pb-2">
+                            <i class="fa-solid fa-shirt text-amber-400"></i> Clothing Guidelines
+                        </h3>
+                        <div class="flex flex-col gap-2.5">
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-shorts" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-shorts" class="text-sm text-slate-200 cursor-pointer">Shorts (past knees when standing)</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-tshirts" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-tshirts" class="text-sm text-slate-200 cursor-pointer">T-shirts (no holes/midriffs)</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-polo" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-polo" class="text-sm text-slate-200 cursor-pointer">Polo / Collared shirt (for church)</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-pants" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-pants" class="text-sm text-slate-200 cursor-pointer">Jeans, khakis, or slacks / Church dress</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-swimwear" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-swimwear" class="text-sm text-slate-200 cursor-pointer">Modest Swimwear (Trunks / One-piece or Tankini)</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-sandals" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-sandals" class="text-sm text-slate-200 cursor-pointer">Sandals, flip-flops, or slides</label></div>
+                            <div class="flex items-center gap-2.5"><input type="checkbox" id="item-runners" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-runners" class="text-sm text-slate-200 cursor-pointer">Running shoes</label></div>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Packing Tip Banner -->
+                <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-3">
+                    <i class="fa-solid fa-lightbulb text-amber-400 text-lg mt-0.5"></i>
+                    <p class="text-xs sm:text-sm text-slate-300 font-light">
+                        <strong class="text-amber-200">Tip:</strong> Pack light, but make sure you have enough clothing for the duration of the trip and a few extra essentials in case of delays. There will be an opportunity to wash clothes. Hotels will have universal chargers, but you may want to bring one if you like.
+                    </p>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- DEPARTURE TIMELINE SECTION -->
+        <section class="w-full">
+            <div class="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden flex flex-col gap-6">
+                
+                <div class="flex items-center gap-3 border-b border-slate-700/60 pb-4">
+                    <div class="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400">
+                        <i class="fa-solid fa-clock-rotate-left text-2xl"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-2xl font-bold font-cinzel text-amber-200">Departure Timeline</h2>
+                        <p class="text-xs sm:text-sm text-slate-300 font-light">Key milestones for August 1st departure &amp; arrival in Thailand</p>
+                    </div>
+                </div>
+
+                <!-- Vertical Timeline Grid -->
+                <div class="relative pl-6 sm:pl-8 border-l-2 border-amber-500/30 flex flex-col gap-8 my-2">
+                    
+                    <!-- Event 1 -->
+                    <div class="relative group">
+                        <div class="absolute -left-[31px] sm:-left-[39px] top-1 w-5 h-5 rounded-full bg-slate-900 border-2 border-amber-400 group-hover:scale-125 transition-transform flex items-center justify-center">
+                            <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+                        </div>
+                        <div class="glass-panel-subtle p-4 rounded-2xl border border-slate-800">
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+                                <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Aug 1 • 5:30 PM PST</span>
+                                <span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">Gathering</span>
+                            </div>
+                            <h3 class="text-base font-bold text-slate-100 mb-1">Meet at GMB</h3>
+                            <p class="text-xs sm:text-sm text-slate-300 font-light">Everyone gather with all checked luggage and personal carry-on items ready to go.</p>
+                        </div>
+                    </div>
+
+                    <!-- Event 2 -->
+                    <div class="relative group">
+                        <div class="absolute -left-[31px] sm:-left-[39px] top-1 w-5 h-5 rounded-full bg-slate-900 border-2 border-amber-400 group-hover:scale-125 transition-transform flex items-center justify-center">
+                            <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+                        </div>
+                        <div class="glass-panel-subtle p-4 rounded-2xl border border-slate-800">
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+                                <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Aug 1 • 6:00 PM PST</span>
+                                <span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">Transit</span>
+                            </div>
+                            <h3 class="text-base font-bold text-slate-100 mb-1">Bus Departs for YVR Airport</h3>
+                            <p class="text-xs sm:text-sm text-slate-300 font-light">Team bus departs GMB bound directly for Vancouver International Airport.</p>
+                        </div>
+                    </div>
+
+                    <!-- Event 3 -->
+                    <div class="relative group">
+                        <div class="absolute -left-[31px] sm:-left-[39px] top-1 w-5 h-5 rounded-full bg-slate-900 border-2 border-amber-400 group-hover:scale-125 transition-transform flex items-center justify-center">
+                            <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+                        </div>
+                        <div class="glass-panel-subtle p-4 rounded-2xl border border-slate-800">
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+                                <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Aug 1 • 7:15 PM – 8:00 PM PST</span>
+                                <span class="text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-300 border border-slate-700">YVR Check-in</span>
+                            </div>
+                            <h3 class="text-base font-bold text-slate-100 mb-1">Arrive at YVR &amp; Security Screening</h3>
+                            <p class="text-xs sm:text-sm text-slate-300 font-light">Estimated arrival at YVR. Check-in checked luggage at Air Canada counter and proceed through international security screening.</p>
+                        </div>
+                    </div>
+
+                    <!-- Event 4 -->
+                    <div class="relative group">
+                        <div class="absolute -left-[31px] sm:-left-[39px] top-1 w-5 h-5 rounded-full bg-slate-900 border-2 border-amber-400 group-hover:scale-125 transition-transform flex items-center justify-center">
+                            <div class="w-2 h-2 rounded-full bg-amber-400"></div>
+                        </div>
+                        <div class="glass-panel-subtle p-4 rounded-2xl border border-slate-800">
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+                                <span class="text-xs font-bold uppercase tracking-wider text-amber-400">Aug 1 • 11:30 PM PST</span>
+                                <span class="text-[11px] px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">Flight Takeoff</span>
+                            </div>
+                            <h3 class="text-base font-bold text-slate-100 mb-1">Air Canada AC65 Takeoff</h3>
+                            <p class="text-xs sm:text-sm text-slate-300 font-light">Direct non-stop flight from Vancouver (YVR) to Bangkok (BKK) begins (~16 hours 30 mins air time).</p>
+                        </div>
+                    </div>
+
+                    <!-- Event 5 -->
+                    <div class="relative group">
+                        <div class="absolute -left-[31px] sm:-left-[39px] top-1 w-5 h-5 rounded-full bg-slate-900 border-2 border-emerald-400 group-hover:scale-125 transition-transform flex items-center justify-center">
+                            <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+                        </div>
+                        <div class="glass-panel-subtle p-4 rounded-2xl border border-slate-800">
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+                                <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Aug 3 • 5:00 AM Local Thai Time</span>
+                                <span class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">Touchdown</span>
+                            </div>
+                            <h3 class="text-base font-bold text-slate-100 mb-1">Land in Bangkok (BKK)</h3>
+                            <p class="text-xs sm:text-sm text-slate-300 font-light">Touchdown at Suvarnabhumi Airport in Bangkok after crossing the International Date Line.</p>
+                        </div>
+                    </div>
+
+                    <!-- Event 6 -->
+                    <div class="relative group">
+                        <div class="absolute -left-[31px] sm:-left-[39px] top-1 w-5 h-5 rounded-full bg-slate-900 border-2 border-emerald-400 group-hover:scale-125 transition-transform flex items-center justify-center">
+                            <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
+                        </div>
+                        <div class="glass-panel-subtle p-4 rounded-2xl border border-slate-800">
+                            <div class="flex flex-wrap items-center justify-between gap-2 mb-1">
+                                <span class="text-xs font-bold uppercase tracking-wider text-emerald-400">Aug 3 • ~6:00 AM Local Thai Time</span>
+                                <span class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">Base Arrival</span>
+                            </div>
+                            <h3 class="text-base font-bold text-slate-100 mb-1">Arrive at ALH Mission Base</h3>
+                            <p class="text-xs sm:text-sm text-slate-300 font-light">Clear immigration and baggage claim, then travel to Abundant Life Home (ALH).</p>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- FLIGHT INFO OVERVIEW SECTION -->
+        <section class="w-full">
+            <div class="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden flex flex-col gap-6">
+                
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-700/60 pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400">
+                            <i class="fa-solid fa-plane-departure text-2xl"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold font-cinzel text-amber-200">Flight Overview</h2>
+                            <p class="text-xs sm:text-sm text-slate-300 font-light">Air Canada Flight Details &amp; Route Information</p>
+                        </div>
+                    </div>
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-300 font-mono font-bold text-sm">
+                        <i class="fa-solid fa-ticket"></i> AC65
+                    </div>
+                </div>
+
+                <!-- Flight Route Display Card -->
+                <div class="glass-panel-subtle rounded-2xl p-6 border border-slate-800 flex flex-col gap-6">
+                    
+                    <!-- Route Graphic -->
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 items-center text-center">
+                        <!-- Origin -->
+                        <div class="flex flex-col items-center sm:items-start">
+                            <span class="text-3xl sm:text-4xl font-black font-mono text-amber-300 text-glow">YVR</span>
+                            <span class="text-sm font-bold text-slate-100">Vancouver, BC</span>
+                            <span class="text-xs text-slate-400">Aug 1 • 11:30 PM PST</span>
+                        </div>
+
+                        <!-- Route Line -->
+                        <div class="flex flex-col items-center gap-1">
+                            <span class="text-xs text-amber-400 font-semibold uppercase tracking-wider">Non-stop • ~16h 30m</span>
+                            <div class="w-full flex items-center gap-2">
+                                <div class="h-0.5 flex-1 bg-gradient-to-r from-amber-500 to-amber-300"></div>
+                                <i class="fa-solid fa-plane text-amber-400 transform rotate-90 sm:rotate-0"></i>
+                                <div class="h-0.5 flex-1 bg-gradient-to-r from-amber-300 to-emerald-400"></div>
+                            </div>
+                            <span class="text-[11px] text-slate-400">Boeing 787-9 Dreamliner</span>
+                        </div>
+
+                        <!-- Destination -->
+                        <div class="flex flex-col items-center sm:items-end">
+                            <span class="text-3xl sm:text-4xl font-black font-mono text-emerald-400 text-glow">BKK</span>
+                            <span class="text-sm font-bold text-slate-100">Bangkok, Thailand</span>
+                            <span class="text-xs text-slate-400">Aug 3 • 5:00 AM ICT</span>
+                        </div>
+                    </div>
+
+                    <!-- Flight Details Table Grid -->
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-slate-800 text-center">
+                        <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+                            <span class="text-[11px] text-slate-400 uppercase tracking-wider block mb-0.5">Airline</span>
+                            <span class="text-sm font-semibold text-slate-200">Air Canada</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+                            <span class="text-[11px] text-slate-400 uppercase tracking-wider block mb-0.5">Flight Number</span>
+                            <span class="text-sm font-semibold text-amber-300 font-mono">AC65</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+                            <span class="text-[11px] text-slate-400 uppercase tracking-wider block mb-0.5">Time Difference</span>
+                            <span class="text-sm font-semibold text-slate-200">+14 Hours</span>
+                        </div>
+                        <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
+                            <span class="text-[11px] text-slate-400 uppercase tracking-wider block mb-0.5">Checked Bag</span>
+                            <span class="text-sm font-semibold text-emerald-400">1 Bag (&lt;50 lbs)</span>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        // TARGET DATE: Aug 1, 2026 at 18:00 (6:00 PM) PST/PDT
+        const TARGET_DATE = new Date("2026-08-01T18:00:00-07:00");
+
+        function updateCountdown() {
+            const now = new Date();
+            const difference = TARGET_DATE - now;
+
+            if (difference <= 0) {
+                document.getElementById('days').innerText = "00";
+                document.getElementById('hours').innerText = "00";
+                document.getElementById('minutes').innerText = "00";
+                document.getElementById('seconds').innerText = "00";
+                return;
+            }
+
+            const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((difference / (1000 * 60 * 60)) % 24);
+            const minutes = Math.floor((difference / (1000 * 60)) % 60);
+            const seconds = Math.floor((difference / 1000) % 60);
+
+            document.getElementById('days').innerText = days < 100 ? String(days).padStart(2, '0') : days;
+            document.getElementById('hours').innerText = String(hours).padStart(2, '0');
+            document.getElementById('minutes').innerText = String(minutes).padStart(2, '0');
+            document.getElementById('seconds').innerText = String(seconds).padStart(2, '0');
+        }
+
+        // PACKING LIST LOGIC WITH LOCALSTORAGE PERSISTENCE
+        function updateProgress() {
+            const checkboxes = document.querySelectorAll('.item-checkbox');
+            let checkedCount = 0;
+            const state = {};
+
+            checkboxes.forEach(cb => {
+                state[cb.id] = cb.checked;
+                if (cb.checked) checkedCount++;
+            });
+
+            const percent = checkboxes.length ? Math.round((checkedCount / checkboxes.length) * 100) : 0;
+            document.getElementById('progress-percent').innerText = `${percent}%`;
+            document.getElementById('progress-bar').style.width = `${percent}%`;
+
+            try {
+                localStorage.setItem('thailand_packing_state', JSON.stringify(state));
+            } catch (e) {
+                // Ignore storage errors if unavailable
+            }
+        }
+
+        function loadPackingState() {
+            try {
+                const saved = localStorage.getItem('thailand_packing_state');
+                if (saved) {
+                    const state = JSON.parse(saved);
+                    Object.keys(state).forEach(id => {
+                        const cb = document.getElementById(id);
+                        if (cb) cb.checked = state[id];
+                    });
+                }
+            } catch (e) {
+                // Ignore storage errors if unavailable
+            }
+            updateProgress();
+        }
+
+        function resetPackingList() {
+            const checkboxes = document.querySelectorAll('.item-checkbox');
+            checkboxes.forEach(cb => cb.checked = false);
+            updateProgress();
+        }
+
+        // CANVAS MOVING AMBIENT BACKGROUND LIGHTS
+        function initCanvas() {
+            const canvas = document.getElementById('bg-canvas');
+            const ctx = canvas.getContext('2d');
+
+            function resize() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            window.addEventListener('resize', resize);
+            resize();
+
+            let time = 0;
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                time += 0.008;
+
+                const grad1X = canvas.width * (0.3 + 0.25 * Math.sin(time * 0.5));
+                const grad1Y = canvas.height * (0.35 + 0.2 * Math.cos(time * 0.4));
+                const g1 = ctx.createRadialGradient(grad1X, grad1Y, 20, grad1X, grad1Y, canvas.width * 0.5);
+                g1.addColorStop(0, 'rgba(245, 158, 11, 0.12)');
+                g1.addColorStop(1, 'rgba(245, 158, 11, 0)');
+                ctx.fillStyle = g1;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const grad2X = canvas.width * (0.7 + 0.2 * Math.cos(time * 0.4));
+                const grad2Y = canvas.height * (0.65 + 0.25 * Math.sin(time * 0.5));
+                const g2 = ctx.createRadialGradient(grad2X, grad2Y, 20, grad2X, grad2Y, canvas.width * 0.55);
+                g2.addColorStop(0, 'rgba(99, 102, 241, 0.13)');
+                g2.addColorStop(1, 'rgba(99, 102, 241, 0)');
+                ctx.fillStyle = g2;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const grad3X = canvas.width * (0.5 + 0.2 * Math.sin(time * 0.6));
+                const grad3Y = canvas.height * (0.2 + 0.2 * Math.cos(time * 0.3));
+                const g3 = ctx.createRadialGradient(grad3X, grad3Y, 20, grad3X, grad3Y, canvas.width * 0.45);
+                g3.addColorStop(0, 'rgba(126, 34, 206, 0.12)');
+                g3.addColorStop(1, 'rgba(126, 34, 206, 0)');
+                ctx.fillStyle = g3;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        }
+
+        window.onload = function() {
+            initCanvas();
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+            loadPackingState();
+        };
+    </script>
+</body>
+</html>
