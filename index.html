@@ -4,11 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thailand Mission Trip Countdown & Travel Hub</title>
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+
     <!-- FontAwesome Icons CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts: Inter & Cinzel & Kanit -->
+
+    <!-- Google Fonts: Inter, Cinzel & Kanit -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700&family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -29,16 +32,16 @@
 
     <style>
         .glass-panel {
-            background: rgba(15, 23, 42, 0.75);
+            background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(245, 158, 11, 0.3);
+            border: 1px solid rgba(245, 158, 11, 0.35);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(245, 158, 11, 0.15);
         }
         .glass-panel-subtle {
-            background: rgba(30, 41, 59, 0.5);
+            background: rgba(30, 41, 59, 0.6);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.12);
         }
         .text-glow {
             text-shadow: 0 0 25px rgba(245, 158, 11, 0.7), 0 0 50px rgba(245, 158, 11, 0.3);
@@ -100,21 +103,45 @@
             text-decoration: line-through;
             color: rgba(148, 163, 184, 0.7);
         }
+
+        /* Fullscreen Focus Mode Styles */
+        body.fullscreen-mode {
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        body.fullscreen-mode section {
+            display: none !important;
+        }
+        body.fullscreen-mode header {
+            margin-bottom: 2rem;
+        }
+        body.fullscreen-mode main {
+            width: 100%;
+            max-width: 56rem;
+            transform: scale(1.08);
+            transition: transform 0.3s ease;
+        }
     </style>
 </head>
 
 <body class="bg-slate-950 text-slate-100 font-sans min-h-screen relative overflow-x-hidden flex flex-col justify-center items-center py-8 select-none">
 
-    <!-- Ambient Drifting Color Lights (Oranges, Blues, Purples) -->
+    <!-- Floating Minimal Fullscreen Toggle Button -->
+    <button id="fullscreen-btn" onclick="toggleFullscreenCountdown()" 
+        class="fixed top-4 right-4 z-50 p-3.5 rounded-full bg-slate-900/90 hover:bg-slate-800 text-amber-400 border border-amber-500/50 backdrop-blur-md shadow-2xl transition-all duration-300 hover:scale-110 active:scale-95 group focus:outline-none" 
+        title="Toggle Fullscreen Countdown Focus" aria-label="Toggle Fullscreen Countdown">
+        <i id="fullscreen-icon" class="fa-solid fa-expand text-base sm:text-lg"></i>
+    </button>
+
+    <!-- Ambient Drifting Color Lights -->
     <div class="fixed top-[-10%] left-[-10%] w-[55vw] h-[55vw] max-w-[700px] max-h-[700px] bg-amber-600/30 rounded-full blur-[140px] pointer-events-none orb-orange z-0"></div>
     <div class="fixed bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] max-w-[750px] max-h-[750px] bg-indigo-700/35 rounded-full blur-[150px] pointer-events-none orb-blue z-0"></div>
     <div class="fixed top-[20%] right-[-5%] w-[45vw] h-[45vw] max-w-[600px] max-h-[600px] bg-purple-900/40 rounded-full blur-[140px] pointer-events-none orb-purple z-0"></div>
     <div class="fixed bottom-[15%] left-[-5%] w-[50vw] h-[50vw] max-w-[650px] max-h-[650px] bg-orange-700/25 rounded-full blur-[150px] pointer-events-none orb-amber z-0"></div>
 
-    <!-- Soft Center Ambient Atmosphere -->
-    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] h-[70vw] max-w-[900px] max-h-[900px] bg-violet-950/30 rounded-full blur-[160px] pointer-events-none z-0"></div>
-
-    <!-- Canvas for Smooth Moving Color Light Waves -->
+    <!-- Dynamic Background Canvas -->
     <canvas id="bg-canvas"></canvas>
 
     <!-- Main Content Container -->
@@ -122,7 +149,7 @@
         
         <!-- HEADER SECTION -->
         <header class="text-center mb-2">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900/80 border border-amber-500/40 text-amber-300 text-xs font-semibold tracking-wider uppercase mb-3 shadow-lg">
+            <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-slate-900/80 border border-amber-500/40 text-amber-300 text-xs font-semibold tracking-wider uppercase mb-3 shadow-lg">
                 <span class="relative flex h-2 w-2">
                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
                     <span class="relative inline-flex rounded-full h-2 w-2 bg-amber-500"></span>
@@ -141,37 +168,29 @@
         <!-- COUNTDOWN DISPLAY SECTION -->
         <main class="w-full">
             <div class="glass-panel rounded-3xl p-6 sm:p-10 shadow-2xl relative overflow-hidden">
-                <!-- Inner ambient shine -->
                 <div class="absolute -top-24 -left-24 w-56 h-56 bg-amber-500/20 rounded-full blur-3xl pointer-events-none"></div>
                 <div class="absolute -bottom-24 -right-24 w-56 h-56 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
 
-                <!-- Timer Tiles Grid -->
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 text-center relative z-10">
-                    
-                    <!-- DAYS -->
                     <div class="glass-panel-subtle rounded-2xl p-4 sm:p-6 flex flex-col items-center justify-center border-t-2 border-t-amber-500/60 shadow-lg transform transition duration-300 hover:scale-[1.03] hover:border-t-amber-400">
                         <span id="days" class="text-4xl sm:text-6xl font-black font-mono text-white text-glow">000</span>
                         <span class="text-xs sm:text-sm uppercase tracking-widest text-amber-400 font-semibold mt-2">Days</span>
                     </div>
 
-                    <!-- HOURS -->
                     <div class="glass-panel-subtle rounded-2xl p-4 sm:p-6 flex flex-col items-center justify-center border-t-2 border-t-amber-500/60 shadow-lg transform transition duration-300 hover:scale-[1.03] hover:border-t-amber-400">
                         <span id="hours" class="text-4xl sm:text-6xl font-black font-mono text-white text-glow">00</span>
                         <span class="text-xs sm:text-sm uppercase tracking-widest text-amber-400 font-semibold mt-2">Hours</span>
                     </div>
 
-                    <!-- MINUTES -->
                     <div class="glass-panel-subtle rounded-2xl p-4 sm:p-6 flex flex-col items-center justify-center border-t-2 border-t-amber-500/60 shadow-lg transform transition duration-300 hover:scale-[1.03] hover:border-t-amber-400">
                         <span id="minutes" class="text-4xl sm:text-6xl font-black font-mono text-white text-glow">00</span>
                         <span class="text-xs sm:text-sm uppercase tracking-widest text-amber-400 font-semibold mt-2">Minutes</span>
                     </div>
 
-                    <!-- SECONDS -->
                     <div class="glass-panel-subtle rounded-2xl p-4 sm:p-6 flex flex-col items-center justify-center border-t-2 border-t-amber-500/60 shadow-lg transform transition duration-300 hover:scale-[1.03] hover:border-t-amber-400">
                         <span id="seconds" class="text-4xl sm:text-6xl font-black font-mono text-amber-400 text-glow">00</span>
                         <span class="text-xs sm:text-sm uppercase tracking-widest text-amber-400 font-semibold mt-2">Seconds</span>
                     </div>
-
                 </div>
             </div>
         </main>
@@ -180,7 +199,6 @@
         <section class="w-full">
             <div class="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden flex flex-col gap-6">
                 
-                <!-- Section Header -->
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-700/60 pb-4">
                     <div class="flex items-center gap-3">
                         <div class="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400">
@@ -192,7 +210,6 @@
                         </div>
                     </div>
 
-                    <!-- Progress Bar & Reset -->
                     <div class="flex items-center gap-4 min-w-[200px]">
                         <div class="flex-1">
                             <div class="flex justify-between text-xs font-semibold text-amber-300 mb-1">
@@ -209,10 +226,7 @@
                     </div>
                 </div>
 
-                <!-- Packing Categories Grid -->
                 <div id="packing-categories" class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    
-                    <!-- Important Documents -->
                     <div class="glass-panel-subtle rounded-2xl p-5 border border-slate-800 flex flex-col gap-3">
                         <h3 class="text-sm font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2 border-b border-slate-700/50 pb-2">
                             <i class="fa-solid fa-passport text-amber-400"></i> Important Documents
@@ -229,7 +243,6 @@
                         </div>
                     </div>
 
-                    <!-- Personal Items -->
                     <div class="glass-panel-subtle rounded-2xl p-5 border border-slate-800 flex flex-col gap-3">
                         <h3 class="text-sm font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2 border-b border-slate-700/50 pb-2">
                             <i class="fa-solid fa-book-bible text-amber-400"></i> Personal Items
@@ -255,7 +268,6 @@
                         </div>
                     </div>
 
-                    <!-- Toiletries -->
                     <div class="glass-panel-subtle rounded-2xl p-5 border border-slate-800 flex flex-col gap-3">
                         <h3 class="text-sm font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2 border-b border-slate-700/50 pb-2">
                             <i class="fa-solid fa-pump-soap text-amber-400"></i> Toiletries
@@ -269,7 +281,6 @@
                         </div>
                     </div>
 
-                    <!-- Clothing Guidelines -->
                     <div class="glass-panel-subtle rounded-2xl p-5 border border-slate-800 flex flex-col gap-3">
                         <h3 class="text-sm font-bold uppercase tracking-wider text-amber-400 flex items-center gap-2 border-b border-slate-700/50 pb-2">
                             <i class="fa-solid fa-shirt text-amber-400"></i> Clothing Guidelines
@@ -284,14 +295,12 @@
                             <div class="flex items-center gap-2.5"><input type="checkbox" id="item-runners" class="item-checkbox w-4 h-4 rounded accent-amber-500 cursor-pointer" onchange="updateProgress()"><label for="item-runners" class="text-sm text-slate-200 cursor-pointer">Running shoes</label></div>
                         </div>
                     </div>
-
                 </div>
 
-                <!-- Packing Tip Banner -->
                 <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-3">
                     <i class="fa-solid fa-lightbulb text-amber-400 text-lg mt-0.5"></i>
                     <p class="text-xs sm:text-sm text-slate-300 font-light">
-                        <strong class="text-amber-200">Tip:</strong> Pack light, but make sure you have enough clothing for the duration of the trip and a few extra essentials in case of delays. There will be an opportunity to wash clothes. Hotels will have universal chargers, but you may want to bring one if you like.
+                        <strong class="text-amber-200">Tip:</strong> Pack light, but make sure you have enough clothing for the duration of the trip. There will be opportunities to wash clothes. Hotels will have universal chargers, but you may bring one if preferred.
                     </p>
                 </div>
 
@@ -301,7 +310,6 @@
         <!-- DEPARTURE TIMELINE SECTION -->
         <section class="w-full">
             <div class="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden flex flex-col gap-6">
-                
                 <div class="flex items-center gap-3 border-b border-slate-700/60 pb-4">
                     <div class="p-3 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400">
                         <i class="fa-solid fa-clock-rotate-left text-2xl"></i>
@@ -312,10 +320,7 @@
                     </div>
                 </div>
 
-                <!-- Vertical Timeline Grid -->
                 <div class="relative pl-6 sm:pl-8 border-l-2 border-amber-500/30 flex flex-col gap-8 my-2">
-                    
-                    <!-- Event 1 -->
                     <div class="relative group">
                         <div class="absolute -left-[31px] sm:-left-[39px] top-1 w-5 h-5 rounded-full bg-slate-900 border-2 border-amber-400 group-hover:scale-125 transition-transform flex items-center justify-center">
                             <div class="w-2 h-2 rounded-full bg-amber-400"></div>
@@ -330,7 +335,6 @@
                         </div>
                     </div>
 
-                    <!-- Event 2 -->
                     <div class="relative group">
                         <div class="absolute -left-[31px] sm:-left-[39px] top-1 w-5 h-5 rounded-full bg-slate-900 border-2 border-amber-400 group-hover:scale-125 transition-transform flex items-center justify-center">
                             <div class="w-2 h-2 rounded-full bg-amber-400"></div>
@@ -345,7 +349,6 @@
                         </div>
                     </div>
 
-                    <!-- Event 3 -->
                     <div class="relative group">
                         <div class="absolute -left-[31px] sm:-left-[39px] top-1 w-5 h-5 rounded-full bg-slate-900 border-2 border-amber-400 group-hover:scale-125 transition-transform flex items-center justify-center">
                             <div class="w-2 h-2 rounded-full bg-amber-400"></div>
@@ -360,7 +363,6 @@
                         </div>
                     </div>
 
-                    <!-- Event 4 -->
                     <div class="relative group">
                         <div class="absolute -left-[31px] sm:-left-[39px] top-1 w-5 h-5 rounded-full bg-slate-900 border-2 border-amber-400 group-hover:scale-125 transition-transform flex items-center justify-center">
                             <div class="w-2 h-2 rounded-full bg-amber-400"></div>
@@ -375,7 +377,6 @@
                         </div>
                     </div>
 
-                    <!-- Event 5 -->
                     <div class="relative group">
                         <div class="absolute -left-[31px] sm:-left-[39px] top-1 w-5 h-5 rounded-full bg-slate-900 border-2 border-emerald-400 group-hover:scale-125 transition-transform flex items-center justify-center">
                             <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
@@ -390,7 +391,6 @@
                         </div>
                     </div>
 
-                    <!-- Event 6 -->
                     <div class="relative group">
                         <div class="absolute -left-[31px] sm:-left-[39px] top-1 w-5 h-5 rounded-full bg-slate-900 border-2 border-emerald-400 group-hover:scale-125 transition-transform flex items-center justify-center">
                             <div class="w-2 h-2 rounded-full bg-emerald-400"></div>
@@ -404,7 +404,6 @@
                             <p class="text-xs sm:text-sm text-slate-300 font-light">Clear immigration and baggage claim, then travel to Abundant Life Home (ALH).</p>
                         </div>
                     </div>
-
                 </div>
 
             </div>
@@ -429,19 +428,14 @@
                     </div>
                 </div>
 
-                <!-- Flight Route Display Card -->
                 <div class="glass-panel-subtle rounded-2xl p-6 border border-slate-800 flex flex-col gap-6">
-                    
-                    <!-- Route Graphic -->
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 items-center text-center">
-                        <!-- Origin -->
                         <div class="flex flex-col items-center sm:items-start">
                             <span class="text-3xl sm:text-4xl font-black font-mono text-amber-300 text-glow">YVR</span>
                             <span class="text-sm font-bold text-slate-100">Vancouver, BC</span>
                             <span class="text-xs text-slate-400">Aug 1 • 11:30 PM PST</span>
                         </div>
 
-                        <!-- Route Line -->
                         <div class="flex flex-col items-center gap-1">
                             <span class="text-xs text-amber-400 font-semibold uppercase tracking-wider">Non-stop • ~16h 30m</span>
                             <div class="w-full flex items-center gap-2">
@@ -452,7 +446,6 @@
                             <span class="text-[11px] text-slate-400">Boeing 787-9 Dreamliner</span>
                         </div>
 
-                        <!-- Destination -->
                         <div class="flex flex-col items-center sm:items-end">
                             <span class="text-3xl sm:text-4xl font-black font-mono text-emerald-400 text-glow">BKK</span>
                             <span class="text-sm font-bold text-slate-100">Bangkok, Thailand</span>
@@ -460,7 +453,6 @@
                         </div>
                     </div>
 
-                    <!-- Flight Details Table Grid -->
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4 border-t border-slate-800 text-center">
                         <div class="p-3 rounded-xl bg-slate-900/60 border border-slate-800">
                             <span class="text-[11px] text-slate-400 uppercase tracking-wider block mb-0.5">Airline</span>
@@ -479,7 +471,6 @@
                             <span class="text-sm font-semibold text-emerald-400">1 Bag (&lt;50 lbs)</span>
                         </div>
                     </div>
-
                 </div>
 
             </div>
@@ -514,6 +505,34 @@
             document.getElementById('seconds').innerText = String(seconds).padStart(2, '0');
         }
 
+        // FULLSCREEN FOCUS MODE TOGGLE
+        function toggleFullscreenCountdown() {
+            const body = document.body;
+            const icon = document.getElementById('fullscreen-icon');
+            body.classList.toggle('fullscreen-mode');
+
+            if (body.classList.contains('fullscreen-mode')) {
+                if (icon) icon.className = 'fa-solid fa-compress text-base sm:text-lg';
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen().catch(() => {});
+                }
+            } else {
+                if (icon) icon.className = 'fa-solid fa-expand text-base sm:text-lg';
+                if (document.fullscreenElement && document.exitFullscreen) {
+                    document.exitFullscreen().catch(() => {});
+                }
+            }
+        }
+
+        document.addEventListener('fullscreenchange', () => {
+            const body = document.body;
+            const icon = document.getElementById('fullscreen-icon');
+            if (!document.fullscreenElement && body.classList.contains('fullscreen-mode')) {
+                body.classList.remove('fullscreen-mode');
+                if (icon) icon.className = 'fa-solid fa-expand text-base sm:text-lg';
+            }
+        });
+
         // PACKING LIST LOGIC WITH LOCALSTORAGE PERSISTENCE
         function updateProgress() {
             const checkboxes = document.querySelectorAll('.item-checkbox');
@@ -526,14 +545,15 @@
             });
 
             const percent = checkboxes.length ? Math.round((checkedCount / checkboxes.length) * 100) : 0;
-            document.getElementById('progress-percent').innerText = `${percent}%`;
-            document.getElementById('progress-bar').style.width = `${percent}%`;
+            const percentEl = document.getElementById('progress-percent');
+            const barEl = document.getElementById('progress-bar');
+            
+            if (percentEl) percentEl.innerText = `${percent}%`;
+            if (barEl) barEl.style.width = `${percent}%`;
 
             try {
                 localStorage.setItem('thailand_packing_state', JSON.stringify(state));
-            } catch (e) {
-                // Ignore storage errors if unavailable
-            }
+            } catch (e) {}
         }
 
         function loadPackingState() {
@@ -546,9 +566,7 @@
                         if (cb) cb.checked = state[id];
                     });
                 }
-            } catch (e) {
-                // Ignore storage errors if unavailable
-            }
+            } catch (e) {}
             updateProgress();
         }
 
@@ -561,6 +579,7 @@
         // CANVAS MOVING AMBIENT BACKGROUND LIGHTS
         function initCanvas() {
             const canvas = document.getElementById('bg-canvas');
+            if (!canvas) return;
             const ctx = canvas.getContext('2d');
 
             function resize() {
